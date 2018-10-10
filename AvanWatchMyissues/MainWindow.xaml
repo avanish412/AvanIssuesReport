@@ -1,0 +1,353 @@
+﻿<Controls:MetroWindow x:Class="AvanWatchMyissues.View.MainWindow"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:AvanWatchMyissues.View"
+        xmlns:rrmodal="clr-namespace:AvanWatchMyissues.Model;assembly=IssuesReportModel"
+        xmlns:rrviewmodel="clr-namespace:AvanWatchMyissues.ViewModel;assembly=IssuesReportViewModel"
+        mc:Ignorable="d"
+        Title="AVAN Watch My Issues" Height="800" Width="1000" 
+        Icon="github.ico"
+        BorderThickness="2" BorderBrush="Gray">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CloseCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Window.DataContext>
+        <rrviewmodel:IssuesReportViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <local:UrlConverter x:Key="UrlConverter" />
+        <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="rrmodal:ReportType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <local:InvertBoolConverter x:Key="invertBoolConverter"/>
+        <local:StoryToBrushConverter x:Key="StoryToBrushConverter"/>
+        <local:BoolToVisibleOrHidden x:Key="booltoVisibleConverter" Collapse="False" Reverse="False"/>
+        <local:BoolToVisibleOrHidden x:Key="booltoInvisibleConverter" Collapse="True" Reverse="True"/>
+        
+        <Style x:Key="HighlightRow" TargetType="{x:Type DataGridRow}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=FormattedID,
+                                    Converter={StaticResource StoryToBrushConverter}}"
+                                    Value="true">
+                    <Setter Property="Background" Value="SkyBlue"/>
+                </DataTrigger>
+                <Trigger Property="IsSelected" Value="True" >
+                    <Setter Property="Background" Value="Gainsboro" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <LinearGradientBrush x:Key="LightBrush" StartPoint="0,0" EndPoint="0,1">
+            <GradientBrush.GradientStops>
+                <GradientStopCollection>
+                    <GradientStop Color="#99EBFF" Offset="0.0"/>
+                    <GradientStop Color="#1AD1FF" Offset="1.0"/>
+                </GradientStopCollection>
+            </GradientBrush.GradientStops>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="SolidBorderBrush" Color="Blue" />
+        <Style x:Key="{x:Type ToolTip}" TargetType="ToolTip">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="HasDropShadow" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border Name="Border"
+          Background="{StaticResource LightBrush}"
+          BorderBrush="{StaticResource SolidBorderBrush}"
+          BorderThickness="1"
+          Width="{TemplateBinding Width}"
+          Height="{TemplateBinding Height}">
+                            <ContentPresenter
+            Margin="4" 
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasDropShadow" Value="true">
+                                <Setter TargetName="Border" Property="CornerRadius" Value="4"/>
+                                <Setter TargetName="Border" Property="SnapsToDevicePixels" Value="true"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.RowSpan="2"
+                       Grid.Column="0" Grid.ColumnSpan="2"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                       FontSize="30"
+                       Content="You are Logged-in"
+                       Visibility="{Binding LoggedIn,Converter={StaticResource booltoVisibleConverter}}"/>
+                <Label Grid.Row="0"
+                   Grid.Column="0" 
+                   Content="GitHub ID" 
+                   Margin="3,1,1,1" 
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"
+                   Visibility="{Binding LoggedIn,Converter={StaticResource booltoInvisibleConverter}}"/>
+                <Label Grid.Row="1" 
+                   Grid.Column="0" 
+                   Content="Password" 
+                   Margin="3,1,1,1" 
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"
+                  Visibility="{Binding LoggedIn,Converter={StaticResource booltoInvisibleConverter}}"/>
+                <TextBox Height="15"
+                     Grid.Row="0" 
+                     Grid.Column="1" 
+                     Margin="3,3,3,3" Text="{Binding txtUserID, Mode=TwoWay}"
+                     IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"
+                     Visibility="{Binding LoggedIn,Converter={StaticResource booltoInvisibleConverter}}"/>
+                <PasswordBox Grid.Row="1" 
+                     Grid.Column="1" 
+                     Height="15"
+                     Margin="3,3,3,5" 
+                     local:PasswordHelper.Attach="True"
+                     local:PasswordHelper.Password="{Binding txtPassword, Mode=TwoWay}" 
+                     IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"
+                     Visibility="{Binding LoggedIn,Converter={StaticResource booltoInvisibleConverter}}"/>
+                <Button Grid.Row="2" 
+                        Grid.Column="0" 
+                        Margin="10,4,10,4"
+                        Height="14"
+                        Width="70"
+                        Content="Reset"
+                        Visibility="Hidden"
+                        IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"
+                        Command="{Binding ResetCommand}"/>
+                <Button Grid.Row="2" 
+                        Grid.Column="0" 
+                        Grid.ColumnSpan="2"
+                        Margin="30,4,30,4"
+                        Height="14"
+                        Width="100"
+                        Content="Login"
+                        Command="{Binding LoginCommand}"
+                        IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"
+                        Visibility="{Binding LoggedIn,Converter={StaticResource booltoInvisibleConverter}}"/>
+            </Grid>
+            <Label Grid.Row="0" 
+                   Grid.Column="1" 
+                   Content="Repository" 
+                   Margin="3,3,3,3" 
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"/>
+            <Label Grid.Row="0" 
+                   Grid.Column="3" 
+                   Content="Open Issues" 
+                   Margin="3,3,3,3" 
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"/>
+            <Label Grid.Row="1" 
+                   Grid.Column="3" 
+                   Content="Open Pull Requests" 
+                   Margin="3,3,3,3" 
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"/>
+            <ComboBox Grid.Row="0" 
+                      Grid.Column="2" 
+                      Height="22"
+                      Margin="3,8,3,8" 
+                      ItemsSource="{Binding cmbRepositories}"
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding Path=SelectedRepository, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}">
+            </ComboBox>
+            <Label Grid.Row="0" 
+                        Grid.Column="4" 
+                        Content="{Binding TotalIssues,Mode=TwoWay}"
+                       FontSize="25"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                      />
+            <Label Grid.Row="1" 
+                        Grid.Column="4" 
+                        Content="{Binding TotalPullRequests,Mode=TwoWay}"
+                       FontSize="25"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                      />
+            <Label Grid.Row="0" 
+                   Grid.Column="3" 
+                   Content="***" 
+                   Visibility="Hidden"
+                   Margin="3,3,3,3" 
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"/>
+            <Label Grid.Row="1" 
+                   Grid.Column="1" 
+                   Content="Report Type" 
+                   Margin="0,3,0,3"  
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"/>
+
+            <Label Grid.Row="0" 
+                        Grid.Column="4" 
+                        Content="***"
+                   Visibility="Hidden"
+                       FontSize="25"
+                       HorizontalAlignment="Center"/>
+            <ComboBox Name="cmbReportType"
+                      Grid.Row="1" 
+                      Grid.Column="2"
+                      Height="22"
+                      Margin="3,8,3,8" 
+                      ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                      SelectedValue="{Binding Path=SelectedReportType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"/>
+            <Button Content="Generate" 
+                    Grid.Row="0" 
+                    Grid.RowSpan="1" 
+                    Grid.Column= "5" 
+                    Height="32"
+                    Width="120"
+                    Margin="5,8,5,8"
+                    FontSize="15"
+                    FontWeight="Bold"
+                    Command="{Binding PopulateCommand}"
+                    IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"/>
+            <Button Content="Export" 
+                    Grid.Row="1" 
+                    Grid.RowSpan="1" 
+                    Grid.Column= "5" 
+                    Height="32"
+                    Width="120"
+                    Margin="5,8,5,8"
+                    FontSize="15"
+                    FontWeight="Bold"
+                    Click="Export_Click"
+                    IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"/>
+            <Button Content="Send Mail" 
+                    Grid.Row="2" 
+                    Grid.RowSpan="1" 
+                    Grid.Column= "5" 
+                    Height="32"
+                    Width="120"
+                    Margin="5,8,5,8"
+                    FontSize="15"
+                    FontWeight="Bold"
+                    Click="SendEmail_Click"
+                    IsEnabled="{Binding InProgress,Converter={StaticResource invertBoolConverter}}"/>
+        </Grid>
+        <TabControl x:Name="ReportTab"  Grid.Row="1">
+            <TabItem Header="Overall Report">
+                <DataGrid x:Name="IssueReportGrid"
+                    Grid.Row="1"
+                    Margin="10,10,10,10"
+                    AutoGenerateColumns="false"
+                    GridLinesVisibility="All"
+                    CanUserSortColumns="True"
+                    ItemsSource="{Binding gridIssueReportItems}"
+                    RowStyle="{StaticResource HighlightRow}"
+                  CanUserAddRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Repository" Binding="{Binding Repository}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Total Open Issues" Binding="{Binding TotalOpenIssues}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Total Pull Requests" Binding="{Binding TotalPullRequest}" IsReadOnly="True"/>
+                     </DataGrid.Columns>
+                </DataGrid>
+                </TabItem>
+            <TabItem Header="Full Report">
+            <DataGrid x:Name="ResultGrid"
+                    Grid.Row="1"
+                    Margin="10,10,10,10"
+                    AutoGenerateColumns="False"
+                    GridLinesVisibility="All"
+                    CanUserSortColumns="True"
+                    ItemsSource="{Binding gridItems}"
+                    RowStyle="{StaticResource HighlightRow}"
+                  CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Repository" Binding="{Binding Repository}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Number}" IsReadOnly="True">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="ToolTip" Value="{Binding Description}" />
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                    <DataGridHyperlinkColumn Header="ID Link" Binding="{Binding IDLink}" IsReadOnly="True" 
+                                         ContentBinding="{Binding IDLink, Converter={StaticResource UrlConverter}}" >
+                        <DataGridHyperlinkColumn.ElementStyle>
+                            <Style>
+                                <EventSetter Event="Hyperlink.Click" Handler="WebPageClick"/>
+                            </Style>
+                        </DataGridHyperlinkColumn.ElementStyle>
+                    </DataGridHyperlinkColumn>
+                    <DataGridTextColumn Header="Pull Request?" Binding="{Binding IsPullRequest}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Title" Binding="{Binding Title}" IsReadOnly="True">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="ToolTip" Value="{Binding Description}" />
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Logged By" Binding="{Binding User}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Logged Date" Binding="{Binding CreatedAt}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Logged Age" Binding="{Binding CreationAge}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Assignee" Binding="{Binding Assignee,Mode=TwoWay}" IsReadOnly="False"/>
+                    <DataGridTextColumn Header="Last Commented on" Binding="{Binding LastCommentedAt}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Last Commented Age" Binding="{Binding LastCommentedAge}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Total Comments" Binding="{Binding Comments}" IsReadOnly="True">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="ToolTip" Value="{Binding AllComments}" />
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Commented By" Binding="{Binding CommentedBy}" IsReadOnly="True">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="ToolTip" Value="{Binding AllComments}" />
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+
+            </DataGrid>
+          </TabItem>
+        </TabControl>
+        <Controls:ProgressRing Grid.Row="1"
+            IsActive="{Binding InProgress}"/>
+    </Grid>
+</Controls:MetroWindow>
