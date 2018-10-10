@@ -219,17 +219,17 @@ namespace AvanWatchMyissues.ViewModel
             foreach(Issue iss in strlist)
             {
                 //Issue report ////////////////////////////////////
-                if (issueReport == null)
-                    issueReport = new IssueReport();
-                issueReport.Repository = iss.Repository;
-
-                if (iss.Repository.Equals(issueReport.Repository) == true)
+                if (iss.Repository.Equals(issueReport.Repository) != true)
                 {
-                   // if(nIndex == 0)
+                    if(nIndex != 0)
                         strReportlist.Add(issueReport);
                     issueReport = null;
                 }
+                if (issueReport == null)
+                    issueReport = new IssueReport();
                 
+                
+                issueReport.Repository = iss.Repository;
                 if (iss.IsPullRequest == true)
                     issueReport.TotalPullRequest++;
                 else
@@ -271,48 +271,45 @@ namespace AvanWatchMyissues.ViewModel
             _cfgAcccess.IssuesCredential.password = IssueReportHelper.EncryptString(txtPassword);
 
             List<Repository> repositories = new List<Repository>(_cfgAcccess.Repositories);
-
-            if (gridItems != null)
+            
+            foreach (Issue issue in gridItems)
             {
-                foreach (Issue issue in gridItems)
+                int nIndex = 0;
+                foreach (Repository rep in _cfgAcccess.Repositories)
                 {
-                    int nIndex = 0;
-                    foreach (Repository rep in _cfgAcccess.Repositories)
+                    if (issue.Repository.CompareTo(rep.Name) == 0)
                     {
-                        if (issue.Repository.CompareTo(rep.Name) == 0)
+                        int nCount = 0;
+                        bool bExist = false;
+                        if (rep.githubissues != null)
                         {
-                            int nCount = 0;
-                            bool bExist = false;
-                            if (rep.githubissues != null)
+                            foreach (GithubIssue gitissue in rep.githubissues)
                             {
-                                foreach (GithubIssue gitissue in rep.githubissues)
+                                if (gitissue.number == issue.Number)
                                 {
-                                    if (gitissue.number == issue.Number)
-                                    {
-                                        _cfgAcccess.Repositories[nIndex].githubissues[nCount].assignee = issue.Assignee;
-                                        bExist = true;
-                                        break;
-                                    }
-                                    nCount++;
+                                    _cfgAcccess.Repositories[nIndex].githubissues[nCount].assignee = issue.Assignee;
+                                    bExist = true;
+                                    break;
                                 }
+                                nCount++;
                             }
-                            if (!bExist)
-                            {
-                                GithubIssue[] array = _cfgAcccess.Repositories[nIndex].githubissues;
-                                int newsize = _cfgAcccess.Repositories[nIndex].githubissues != null ? _cfgAcccess.Repositories[nIndex].githubissues.Length + 1 : 1;
-                                Array.Resize(ref array, newsize);
-                                GithubIssue ghIssue = new GithubIssue();
-                                ghIssue.assignee = issue.Assignee;
-                                ghIssue.number = issue.Number;
-                                array[newsize - 1] = ghIssue;
-                                _cfgAcccess.Repositories[nIndex].githubissues = array;
-                            }
-                            else
-                                continue;
                         }
-                        nIndex++;
+                        if (!bExist)
+                        {
+                            GithubIssue []array = _cfgAcccess.Repositories[nIndex].githubissues;
+                            int newsize = _cfgAcccess.Repositories[nIndex].githubissues != null? _cfgAcccess.Repositories[nIndex].githubissues.Length+1:1;
+                            Array.Resize(ref array, newsize);
+                            GithubIssue ghIssue = new GithubIssue();
+                            ghIssue.assignee = issue.Assignee;
+                            ghIssue.number = issue.Number;
+                            array[newsize - 1] = ghIssue;
+                            _cfgAcccess.Repositories[nIndex].githubissues = array;
+                        }
+                        else
+                            continue;
                     }
-                }
+                    nIndex++;
+                }                
             }
             //_cfgAcccess.Repositories = cmbRepositories;
 
