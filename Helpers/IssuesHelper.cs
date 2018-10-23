@@ -83,6 +83,7 @@ namespace AvanWatchMyissues.Helpers
                         iss.Comments = issue.Comments;
                         iss.IsPullRequest = (issue.PullRequest != null);
 
+                        iss.Labels = issue.Labels.Count > 0 ? string.Join(" | ", from item in issue.Labels select item.Name) : " ";
                         if (iss.Comments > 0)
                         {
                             var commentsforissue = await GithubClient.Issue.Comment.GetAllForIssue(repo.owner, repo.Name, issue.Number);
@@ -120,6 +121,7 @@ namespace AvanWatchMyissues.Helpers
                     iss.Assignee = issue.Assignee != null ? issue.Assignee.Name : "";
                     iss.Comments = issue.Comments;
                     iss.IsPullRequest = (issue.PullRequest != null);
+                    iss.Labels = issue.Labels.Count > 0 ? string.Join(" | ", from item in issue.Labels select item.Name) : " ";
                     if (iss.Comments>0)
                     {
                         var commentsforissue = await GithubClient.Issue.Comment.GetAllForIssue(selectedrepo.owner,selectedrepo.Name,issue.Number);

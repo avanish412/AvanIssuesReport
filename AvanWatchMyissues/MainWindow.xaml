@@ -322,6 +322,7 @@
                             </Style>
                         </DataGridTextColumn.CellStyle>
                     </DataGridTextColumn>
+                    <DataGridTextColumn Header="Labels" Binding="{Binding Labels}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Logged By" Binding="{Binding User}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Logged Date" Binding="{Binding CreatedAt}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Logged Age" Binding="{Binding CreationAge}" IsReadOnly="True"/>
