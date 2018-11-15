@@ -31,6 +31,7 @@ namespace AvanWatchMyissues.Model
         public string Repository { get; set; }
         public int Number { get; set; }
 
+        public string Labels { get; set; }
         public bool IsPullRequest { get; set; }
         public Uri IDLink { get; set; }
         public string Title{ get; set; }
